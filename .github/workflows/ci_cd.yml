@@ -1,0 +1,34 @@
+name: GitHub CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install --upgrade pip
+      - run: pip install -r requirements.txt
+      - run: flake8 app
+      - run: pytest
+
+  cd:
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Simulated Deployment
+        run: |
+          echo "Starting deployment..."
+          python -m http.server 8000 &
+          echo "App deployed locally (simulated)"

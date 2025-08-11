@@ -1,0 +1,31 @@
+image: python:3.11
+
+pipelines:
+  default:
+    - step:
+        name: CI - Lint and Test
+        caches:
+          - pip
+        script:
+          - pip install --upgrade pip
+          - pip install -r requirements.txt
+          - flake8 app
+          - pytest
+
+  branches:
+    main:
+      - step:
+          name: CI - Lint and Test
+          caches:
+            - pip
+          script:
+            - pip install --upgrade pip
+            - pip install -r requirements.txt
+            - flake8 app
+            - pytest
+      - step:
+          name: CD - Simulated Deployment
+          script:
+            - echo "Starting deployment..."
+            - python -m http.server 8000 &
+            - echo "App deployed locally (simulated)"
